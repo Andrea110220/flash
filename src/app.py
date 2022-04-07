@@ -10,10 +10,10 @@ conexion = MySQL(app)
 @app.route('/bandejapaisa')
 def listar_bandejapaisa():
     try:
-        bandejapaisa=conexion.connection.bandejapaisa()
+        cursor=conexion.connection.cursor()
         sql = "SELECT frijol, arroz, chicharron  FROM bandejapaisa"
-        bandejapaisa.execute(sql)
-        datos = bandejapaisa.fetchall()
+        cursor.execute(sql)
+        datos = cursor.fetchall()
         bandejapaisa=[]
         for fila in datos:
             bandejapaisa = {'frijol': fila[0], 'arroz': fila[1], 'chicharron': fila[2]}
@@ -25,10 +25,10 @@ def listar_bandejapaisa():
 @app.route('/bandejapaisa/<frijol>')
 def leer_bandejapaisa(frijol):
     try:
-        bandejapaisa=conexion.connection.bandejapaisa()
+        cursor=conexion.connection.cursor()
         sql="SELECT frijol, arroz, chicharron FROM bandejapaisa WHERE frijol = '{0}'".format(frijol)
-        bandejapaisa.execute(sql)
-        datos=bandejapaisa.fetchone()
+        cursor.execute(sql)
+        datos=cursor.fetchone()
         if datos!= None:
             bandejapaisa = {'frijol':datos[0], 'arroz':datos[1], 'chicharron':datos[2]}
             return jsonify({'bandejapaisa':bandejapaisa,'mensaje':"bandejapaisa Encontrado."})
@@ -41,10 +41,10 @@ def leer_bandejapaisa(frijol):
 @app.route('/bandejapaisa')#Este es el metodo POST
 def registrar_bandejapaisa():
     try:
-        bandejapaisa=conexion.connection.bandejapaisa()
-        sql="""INSERT INTO  curso (frijol, arroz, chicharron)
+        cursor=conexion.connection.cursor()
+        sql="""INSERT INTO  bandejapaisa (frijol, arroz, chicharron)
          VALUES ('{0}','{1}','{2}')""".format(request.json['frijol'], request.json['arroz'], request.json['chicharron'])
-        bandejapaisa.execute(sql)
+        cursor.execute(sql)
         conexion.connection.commit()
         return({'mensaje':"bandejapaisa registrado."})
     except Exception as e:
@@ -54,9 +54,9 @@ def registrar_bandejapaisa():
 @app.route('/bandejapaisa/<frijol>')#Este es el metodo PUT
 def modificar_bandejapaisa(frijol):
     try:
-        bandejapaisa=conexion.connection.bandejapaisa()
+        cursor=conexion.connection.cursor()
         sql="UPDATE bandejapaisa SET arroz = '{0}', chicharron = '{1}' WHERE frijol = '{2}'".format(request.json['arroz'], request.json['chicharron'], frijol)
-        bandejapaisa.execute(sql)
+        cursor.execute(sql)
         conexion.connection.commit()
         return({'mensaje':"Curso actualizado."})
     except Exception as e:
@@ -66,9 +66,9 @@ def modificar_bandejapaisa(frijol):
 @app.route('/bandejapaisa/<frijol>')#Este es el metodo DELETE
 def eliminar_bandejapaisa(frijol):
     try:
-        bandejapaisa=conexion.connection.bandejapaisa()
+        cursor=conexion.connection.cursor()
         sql=" DELETE FROM bandejapaisa WHERE frijol = '{0}'".format(frijol)
-        bandejapaisa.execute(sql)
+        cursor.execute(sql)
         conexion.connection.commit()
         return({'mensaje':"bandejapaisa eliminado."})
     except Exception as e:
